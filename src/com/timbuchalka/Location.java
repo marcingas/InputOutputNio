@@ -1,4 +1,4 @@
-package com.Marcin;
+package com.timbuchalka;
 
 import java.io.Serializable;
 import java.util.LinkedHashMap;
