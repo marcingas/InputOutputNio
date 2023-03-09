@@ -35,42 +35,32 @@ public class Locations implements Map<Integer, Location> {
     static {
         Path locationPath = FileSystems.getDefault().getPath("locations_big.txt");
         Path directionPath = FileSystems.getDefault().getPath("directions_big.txt");
-        try (Scanner scanner = new Scanner(Files.newBufferedReader(locationPath))){
+        try (Scanner scanner = new Scanner(Files.newBufferedReader(locationPath))) {
             scanner.useDelimiter(",");
-            while(scanner.hasNextLine()){
+            while (scanner.hasNextLine()) {
                 int loc = scanner.nextInt();
                 scanner.skip(scanner.delimiter());
                 String description = scanner.nextLine();
                 System.out.println("imported loc: " + loc + ": " + description);
                 locations.put(loc, new Location(loc, description, null));
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
-
-//        try (ObjectInputStream locFile = new ObjectInputStream(new BufferedInputStream(new FileInputStream("locations.dat")))) {
-//            boolean eof = false;
-//            while (!eof) {
-//                try {
-//                    Location location = (Location) locFile.readObject();
-//                    System.out.println("Read location " + location.getLocationID() + " : " + location.getDescription());
-//                    System.out.println("Found " + location.getExits().size() + " exits");
-//
-//                    locations.put(location.getLocationID(), location);
-//                } catch (EOFException e) {
-//                    eof = true;
-//                }
-//            }
-//        } catch (InvalidClassException e) {
-//            System.out.println("InvalidClassException " + e.getMessage());
-//        } catch (IOException io) {
-//            System.out.println("IO Exception " + io.getMessage());
-//        } catch (ClassNotFoundException e) {
-//            System.out.println("ClassNotFoundException " + e.getMessage());
-//        }
+        try (BufferedReader dirFile = Files.newBufferedReader(directionPath)) {
+            String input;
+            while ((input = dirFile.readLine()) != null) {
+                String[] data = input.split(",");
+                int loc = Integer.parseInt(data[0]);
+                String direction = data[1];
+                int destination = Integer.parseInt(data[2]);
+                System.out.println(loc + ": " + direction + ": " + destination);
+                Location location = locations.get(loc);
+                location.addExit(direction, destination);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
